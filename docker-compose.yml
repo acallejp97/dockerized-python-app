@@ -1,0 +1,9 @@
+services:
+  docker_image_with_cron:
+    container_name: docker_image_with_cron
+    image: ghcr.io/acallejp97/template:latest
+    environment:
+      - NOTIFICATION_URL=tgram://<BOT_TOKEN>/<CHAT_ID>
+      - CRON=0 8 * * 2-4
+      - TZ=Europe/Madrid
+    restart: unless-stopped
