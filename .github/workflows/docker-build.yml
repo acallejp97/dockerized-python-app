@@ -8,6 +8,12 @@ on:
     paths:
       - 'app/**'
       - 'Dockerfile'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/docker-build.yml'
+      - 'tests/**'
+      - 'conftest.py'
+      - 'ruff.toml'
     
 jobs:
   lint:
@@ -15,35 +21,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
         with:
+          version: '0.12.23'
           python-version: '3.10'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install ruff
+          enable-cache: true
+      - name: Install lint dependencies
+        run: uv sync --locked --no-default-groups --group lint
       - name: Run ruff
-        run: |
-          ruff check --line-length 120 .
+        run: uv run --locked --no-sync ruff check --line-length 120 .
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
         with:
+          version: '0.12.23'
           python-version: '3.10'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r app/requirements.txt
-          pip install -r tests/requirements.txt
+          enable-cache: true
+      - name: Install test dependencies
+        run: uv sync --locked --no-default-groups --group test
       - name: Run tests with coverage
-        run: |
-          # Run pytest from repository root and measure coverage for the `app` package
-          pytest --cov=app --cov-fail-under=80 app tests
+        run: uv run --locked --no-sync pytest --cov=app --cov-fail-under=80 app tests
 
   build:
     runs-on: ubuntu-latest

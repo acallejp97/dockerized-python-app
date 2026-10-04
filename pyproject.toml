@@ -1,0 +1,9 @@
+[project]
+name = "dockerized-python-app"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = []
+
+[dependency-groups]
+lint = ["ruff==0.14.10"]
+test = ["pytest==9.0.3", "pytest-cov==7.1.0"]
